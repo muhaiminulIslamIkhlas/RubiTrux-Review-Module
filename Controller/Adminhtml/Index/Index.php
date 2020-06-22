@@ -30,29 +30,98 @@ class Index extends \Magento\Backend\App\Action {
         parent::__construct($context, $data);
     }
     
-    public function saveTODatabase($jsonData){
+    public function saveTODatabase($jsonData,$product_id){
         
         print_r($jsonData);
         $additional_param = array();
-        $additional_param['social'] = $jsonData[0]['reviews'][0]['social'];
-        $additional_param['products_purchased'] = $jsonData[0]['reviews'][0]['products_purchased'];
-//            print_r($additional_param);
-//            print_r($jsonData);
+        $ratingValue="";
+        $reviewId="";
+        $review="";
+        $reviewUrl="";
+        $customerDisplayName="";
+        $createdAt="";
+        $lastUpdatedAt="";
+        
+        $review=$jsonData[0]['reviews'];
+        
+        foreach($review as $item){
+                                                
+        if (isset($review['last_updated_date'])){
+            $createdAt = $review['last_updated_date'];
+        }else{
+            $createdAt = "No data found";
+        }
+                                        
+        if (isset($review['products']['created_at'])){
+            $createdAt = $review['products']['created_at'];
+        }else{
+            $createdAt = "No data found";
+        }
+        
+        if (isset($review['customer'])){
+            $customerDisplayName = $review['customer']['display_name'];
+        }else{
+            $customerDisplayName = "No data found";
+        }
+        
+        if (isset($review['url'])){
+            $reviewUrl = $review['url'];
+        }else{
+            $reviewUrl = "No data found";
+        }
+            
+        if (isset($review['products'][0]['id'])){
+            $reviewId = $review['products'][0]['id'];
+        }else{
+            $reviewId = "No data found";
+        }
+                
+        if (isset($review['products'][0]['rating']['rating'])){
+            $ratingValue = $review['products'][0]['rating']['rating'];
+        }else{
+            $ratingValue = "No data found";
+        }
+        
+        
+        
+        if (isset($review['products_purchased'])){
+            $additional_param['products_purchased'] = $review['products_purchased'];
+        }else{
+            $additional_param['products_purchased'] = "No data found";
+        }
+        
+        if (isset($review['social'])){
+            $additional_param['social'] = $review['social'];
+        }else{
+            $additional_param['social'] = "No data found";
+        }
+        
         $additionalParam = json_encode($additional_param);
         
         $model = $this->_dataExample->create();
         $model->addData([
-            "product_id" => 'Title 01',
-            "rating_value" => $jsonData[0]['reviews'][0]['products'][0]['rating']['rating'],
-            "review_id" => $jsonData[0]['reviews'][0]['products'][0]['id'],
-            "review" => $jsonData[0]['reviews'][0]['products'][0]['review'],
-            "reviews_url" => $jsonData[0]['reviews'][0]['url'],
-            "customer_display_name" => 1,
-            "created_at" => $jsonData[0]['reviews'][0]['products'][0]['created_at'],
-            "last_updated_date" => $jsonData[0]['reviews'][0]['last_updated_date'],
+            "product_id" => $product_id,
+            "rating_value" => $ratingValue,
+            "review_id" => $reviewId,
+            "review" => $review,
+            "reviews_url" => $reviewUrl,
+            "customer_display_name" => $customerDisplayName,
+            "created_at" => $createdAt,
+            "last_updated_date" => $lastUpdatedAt,
             "additional_param" => $additionalParam
         ]);
         $saveData = $model->save();
+            
+            
+            
+            
+            
+            
+        }
+        
+        
+                        
+
     }
     
     public function fetchData($product_id){
@@ -83,13 +152,14 @@ class Index extends \Magento\Backend\App\Action {
                 ->reset(\Zend_Db_Select::COLUMNS)
                 ->columns(['entity_id']);
        // print_r( $collection->getData());
-        
+ //       $jsonData = $this->fetchData(6563);
+
+
         foreach($collection->getData() as $item){
                 $jsonData = $this->fetchData($item['entity_id']);
                 if(!empty($jsonData[0]['reviews'])){
-                    $this->saveTODatabase($jsonData);
+                    $this->saveTODatabase($jsonData,$item['entity_id']);
                 }
-                //print_r($jsonData);
             }
             echo "Done";
 
