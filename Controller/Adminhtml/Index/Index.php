@@ -36,7 +36,7 @@ class Index extends \Magento\Backend\App\Action {
         $additional_param = array();
         $ratingValue="";
         $reviewId="";
-        $review="";
+        $review_data="";
         $reviewUrl="";
         $customerDisplayName="";
         $createdAt="";
@@ -46,52 +46,59 @@ class Index extends \Magento\Backend\App\Action {
         
         foreach($review as $item){
                                                 
-        if (isset($review['last_updated_date'])){
-            $createdAt = $review['last_updated_date'];
+        if (isset($item['products']['review'])){
+            $review_data = $item['products']['review'];
         }else{
-            $createdAt = "No data found";
+            $review_data = "No data found";
+        }
+          
+                                                
+        if (isset($item['last_updated_date'])){
+            $lastUpdatedAt = $item['last_updated_date'];
+        }else{
+            $lastUpdatedAt = "No data found";
         }
                                         
-        if (isset($review['products']['created_at'])){
-            $createdAt = $review['products']['created_at'];
+        if (isset($item['products']['created_at'])){
+            $createdAt = $item['products']['created_at'];
         }else{
             $createdAt = "No data found";
         }
         
-        if (isset($review['customer'])){
-            $customerDisplayName = $review['customer']['display_name'];
+        if (isset($item['customer'])){
+            $customerDisplayName = $item['customer']['display_name'];
         }else{
             $customerDisplayName = "No data found";
         }
         
-        if (isset($review['url'])){
-            $reviewUrl = $review['url'];
+        if (isset($item['url'])){
+            $reviewUrl = $item['url'];
         }else{
             $reviewUrl = "No data found";
         }
             
-        if (isset($review['products'][0]['id'])){
-            $reviewId = $review['products'][0]['id'];
+        if (isset($item['products'][0]['id'])){
+            $reviewId = $item['products'][0]['id'];
         }else{
             $reviewId = "No data found";
         }
                 
-        if (isset($review['products'][0]['rating']['rating'])){
-            $ratingValue = $review['products'][0]['rating']['rating'];
+        if (isset($item['products'][0]['rating']['rating'])){
+            $ratingValue = $item['products'][0]['rating']['rating'];
         }else{
             $ratingValue = "No data found";
         }
         
         
         
-        if (isset($review['products_purchased'])){
-            $additional_param['products_purchased'] = $review['products_purchased'];
+        if (isset($item['products_purchased'])){
+            $additional_param['products_purchased'] = $item['products_purchased'];
         }else{
             $additional_param['products_purchased'] = "No data found";
         }
         
-        if (isset($review['social'])){
-            $additional_param['social'] = $review['social'];
+        if (isset($item['social'])){
+            $additional_param['social'] = $item['social'];
         }else{
             $additional_param['social'] = "No data found";
         }
@@ -103,7 +110,7 @@ class Index extends \Magento\Backend\App\Action {
             "product_id" => $product_id,
             "rating_value" => $ratingValue,
             "review_id" => $reviewId,
-            "review" => $review,
+            "review" => $review_data,
             "reviews_url" => $reviewUrl,
             "customer_display_name" => $customerDisplayName,
             "created_at" => $createdAt,
@@ -152,7 +159,7 @@ class Index extends \Magento\Backend\App\Action {
                 ->reset(\Zend_Db_Select::COLUMNS)
                 ->columns(['entity_id']);
        // print_r( $collection->getData());
- //       $jsonData = $this->fetchData(6563);
+       //$jsonData = $this->fetchData(6563);
 
 
         foreach($collection->getData() as $item){
@@ -162,6 +169,104 @@ class Index extends \Magento\Backend\App\Action {
                 }
             }
             echo "Done";
+       
+       
+       /*Testing
+        $additional_param = array();
+        $ratingValue="";
+        $reviewId="";
+        $review_data="";
+        $reviewUrl="";
+        $customerDisplayName="";
+        $createdAt="";
+        $lastUpdatedAt="";
+        
+        $review=$jsonData[0]['reviews'];
+        
+        foreach($review as $item){
+                                                            
+        if (isset($item['products']['review'])){
+            $review_data = $item['products']['review'];
+        }else{
+            $review_data = "No data found";
+        }
+          
+                                                
+        if (isset($item['last_updated_date'])){
+            $lastUpdatedAt = $item['last_updated_date'];
+        }else{
+            $lastUpdatedAt = "No data found";
+        }
+                                        
+        if (isset($item['products']['created_at'])){
+            $createdAt = $item['products']['created_at'];
+        }else{
+            $createdAt = "No data found";
+        }
+        
+        if (isset($item['customer'])){
+            $customerDisplayName = $item['customer']['display_name'];
+        }else{
+            $customerDisplayName = "No data found";
+        }
+        
+        if (isset($item['url'])){
+            $reviewUrl = $item['url'];
+        }else{
+            $reviewUrl = "No data found";
+        }
+            
+        if (isset($item['products'][0]['id'])){
+            $reviewId = $item['products'][0]['id'];
+        }else{
+            $reviewId = "No data found";
+        }
+                
+        if (isset($item['products'][0]['rating']['rating'])){
+            $ratingValue = $item['products'][0]['rating']['rating'];
+        }else{
+            $ratingValue = "No data found";
+        }
+        
+        
+        
+        if (isset($item['products_purchased'])){
+            $additional_param['products_purchased'] = $item['products_purchased'];
+        }else{
+            $additional_param['products_purchased'] = "No data found";
+        }
+        
+        if (isset($item['social'])){
+            $additional_param['social'] = $item['social'];
+        }else{
+            $additional_param['social'] = "No data found";
+        }
+        
+        $additionalParam = json_encode($additional_param);
+        
+        
+        $data=array([
+            "product_id" => 6563,
+            "rating_value" => $ratingValue,
+            "review_id" => $reviewId,
+            "review" => $review_data,
+            "reviews_url" => $reviewUrl,
+            "customer_display_name" => $customerDisplayName,
+            "created_at" => $createdAt,
+            "last_updated_date" => $lastUpdatedAt,
+            "additional_param" => $additionalParam
+        ]);
+        print_r($data);
+        echo '<br />';
+            
+            
+            
+            
+            
+            
+        }
+        */
+        
 
         exit();
     }
